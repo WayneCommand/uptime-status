@@ -20,7 +20,7 @@ const workerConfig = {
       // `id` should be unique, history will be kept if the `id` remains constant
       id: 'waynecommand',
       // `name` is used at status page and callback message
-      name: 'Wayne\'s site',
+      name: 'waynecommand.com',
       // `method` should be a valid HTTP Method
       method: 'GET',
       // `target` is a valid URL
@@ -62,6 +62,72 @@ const workerConfig = {
     },
     {
       // `id` should be unique, history will be kept if the `id` remains constant
+      id: 'blog-wayne',
+      // `name` is used at status page and callback message
+      name: 'blog.waynecommand.com',
+      // `method` should be a valid HTTP Method
+      method: 'GET',
+      // `target` is a valid URL
+      target: 'https://blog.waynecommand.com',
+      // [OPTIONAL] `tooltip` is ONLY used at status page to show a tooltip
+      tooltip: 'blog.waynecommand.com',
+      // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
+      statusPageLink: 'https://blog.waynecommand.com',
+      // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
+      expectedCodes: [200],
+      // [OPTIONAL] `timeout` in millisecond, if not specified, default to 10000
+      timeout: 10000,
+      // [OPTIONAL] headers to be sent
+      headers: {
+        'User-Agent': 'Uptimeflare',
+      },
+    },
+    {
+      // `id` should be unique, history will be kept if the `id` remains constant
+      id: 'cloudstorage-wayne',
+      // `name` is used at status page and callback message
+      name: 'cs.waynecommand.com',
+      // `method` should be a valid HTTP Method
+      method: 'GET',
+      // `target` is a valid URL
+      target: 'https://cs.waynecommand.com',
+      // [OPTIONAL] `tooltip` is ONLY used at status page to show a tooltip
+      tooltip: 'cs.waynecommand.com',
+      // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
+      statusPageLink: 'https://cs.waynecommand.com',
+      // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
+      expectedCodes: [200],
+      // [OPTIONAL] `timeout` in millisecond, if not specified, default to 10000
+      timeout: 10000,
+      // [OPTIONAL] headers to be sent
+      headers: {
+        'User-Agent': 'Uptimeflare',
+      },
+    },
+    {
+      // `id` should be unique, history will be kept if the `id` remains constant
+      id: 'gpt-wayne',
+      // `name` is used at status page and callback message
+      name: 'gpt.waynecommand.com',
+      // `method` should be a valid HTTP Method
+      method: 'GET',
+      // `target` is a valid URL
+      target: 'https://gpt.waynecommand.com',
+      // [OPTIONAL] `tooltip` is ONLY used at status page to show a tooltip
+      tooltip: 'gpt.waynecommand.com',
+      // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
+      statusPageLink: 'https://gpt.waynecommand.com',
+      // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
+      expectedCodes: [200],
+      // [OPTIONAL] `timeout` in millisecond, if not specified, default to 10000
+      timeout: 10000,
+      // [OPTIONAL] headers to be sent
+      headers: {
+        'User-Agent': 'Uptimeflare',
+      },
+    },
+    {
+      // `id` should be unique, history will be kept if the `id` remains constant
       id: 'tabby-wayne',
       // `name` is used at status page and callback message
       name: 'tabby.waynecommand.com',
@@ -73,6 +139,50 @@ const workerConfig = {
       tooltip: 'tabby.waynecommand.com',
       // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
       statusPageLink: 'https://tabby.waynecommand.com',
+      // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
+      expectedCodes: [200],
+      // [OPTIONAL] `timeout` in millisecond, if not specified, default to 10000
+      timeout: 10000,
+      // [OPTIONAL] headers to be sent
+      headers: {
+        'User-Agent': 'Uptimeflare',
+      },
+    },
+    {
+      // `id` should be unique, history will be kept if the `id` remains constant
+      id: 'ip-wayne',
+      // `name` is used at status page and callback message
+      name: 'ip.waynecommand.com',
+      // `method` should be a valid HTTP Method
+      method: 'GET',
+      // `target` is a valid URL
+      target: 'https://ip.waynecommand.com',
+      // [OPTIONAL] `tooltip` is ONLY used at status page to show a tooltip
+      tooltip: 'ip.waynecommand.com',
+      // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
+      statusPageLink: 'https://ip.waynecommand.com',
+      // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
+      expectedCodes: [200],
+      // [OPTIONAL] `timeout` in millisecond, if not specified, default to 10000
+      timeout: 10000,
+      // [OPTIONAL] headers to be sent
+      headers: {
+        'User-Agent': 'Uptimeflare',
+      },
+    },
+    {
+      // `id` should be unique, history will be kept if the `id` remains constant
+      id: 'notify-wayne',
+      // `name` is used at status page and callback message
+      name: 'notify.waynecommand.com',
+      // `method` should be a valid HTTP Method
+      method: 'GET',
+      // `target` is a valid URL
+      target: 'https://notify.waynecommand.com',
+      // [OPTIONAL] `tooltip` is ONLY used at status page to show a tooltip
+      tooltip: 'notify.waynecommand.com',
+      // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
+      statusPageLink: 'https://notify.waynecommand.com',
       // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
       expectedCodes: [200],
       // [OPTIONAL] `timeout` in millisecond, if not specified, default to 10000
