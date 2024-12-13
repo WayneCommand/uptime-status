@@ -26,7 +26,7 @@ const workerConfig = {
       // `target` is a valid URL
       target: 'https://waynecommand.com',
       // [OPTIONAL] `tooltip` is ONLY used at status page to show a tooltip
-      tooltip: 'This is waynecommand.com',
+      tooltip: 'Wayne Main Station',
       // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
       statusPageLink: 'https://waynecommand.com',
       // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
@@ -36,26 +36,62 @@ const workerConfig = {
       // [OPTIONAL] headers to be sent
       headers: {
         'User-Agent': 'Uptimeflare',
-        Authorization: 'Bearer YOUR_TOKEN_HERE',
       },
-      // [OPTIONAL] body to be sent
-      body: '',
-      // [OPTIONAL] if specified, the response must contains the keyword to be considered as operational.
-      responseKeyword: '',
-      // [OPTIONAL] if specified, the check will run in your specified region,
-      // refer to docs https://github.com/lyc8503/UptimeFlare/wiki/Geo-specific-checks-setup before setting this value
-      checkLocationWorkerRoute: '',
+    },
+    {
+      // `id` should be unique, history will be kept if the `id` remains constant
+      id: 'wiki-wayne',
+      // `name` is used at status page and callback message
+      name: 'wiki.waynecommand.com',
+      // `method` should be a valid HTTP Method
+      method: 'GET',
+      // `target` is a valid URL
+      target: 'https://wiki.waynecommand.com',
+      // [OPTIONAL] `tooltip` is ONLY used at status page to show a tooltip
+      tooltip: 'wiki.waynecommand.com',
+      // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
+      statusPageLink: 'https://wiki.waynecommand.com',
+      // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
+      expectedCodes: [200],
+      // [OPTIONAL] `timeout` in millisecond, if not specified, default to 10000
+      timeout: 10000,
+      // [OPTIONAL] headers to be sent
+      headers: {
+        'User-Agent': 'Uptimeflare',
+      },
+    },
+    {
+      // `id` should be unique, history will be kept if the `id` remains constant
+      id: 'tabby-wayne',
+      // `name` is used at status page and callback message
+      name: 'tabby.waynecommand.com',
+      // `method` should be a valid HTTP Method
+      method: 'GET',
+      // `target` is a valid URL
+      target: 'https://tabby.waynecommand.com',
+      // [OPTIONAL] `tooltip` is ONLY used at status page to show a tooltip
+      tooltip: 'tabby.waynecommand.com',
+      // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
+      statusPageLink: 'https://tabby.waynecommand.com',
+      // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
+      expectedCodes: [200],
+      // [OPTIONAL] `timeout` in millisecond, if not specified, default to 10000
+      timeout: 10000,
+      // [OPTIONAL] headers to be sent
+      headers: {
+        'User-Agent': 'Uptimeflare',
+      },
     },
     // Example TCP Monitor
     {
       id: 'test_tcp_monitor',
-      name: 'Example TCP Monitor',
+      name: 'Test TCP Monitor',
       // `method` should be `TCP_PING` for tcp monitors
       method: 'TCP_PING',
       // `target` should be `host:port` for tcp monitors
-      target: '1.2.3.4:22',
-      tooltip: 'My production server SSH',
-      statusPageLink: 'https://example.com',
+      target: '1.2.4.8:53',
+      tooltip: 'Test TCP Monitor',
+      statusPageLink: 'https://www.cnnic.com.cn/',
       timeout: 5000,
     },
   ],
