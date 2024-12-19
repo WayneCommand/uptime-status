@@ -195,11 +195,11 @@ const workerConfig = {
     // Example TCP Monitor
     {
       id: 'test_tcp_monitor',
-      name: 'Test TCP Monitor',
+      name: 'Test TCP Monitor (CNNIC)',
       // `method` should be `TCP_PING` for tcp monitors
       method: 'TCP_PING',
       // `target` should be `host:port` for tcp monitors
-      target: '1.2.4.8:53',
+      target: 'cnnic.cn:80',
       tooltip: 'Test TCP Monitor',
       statusPageLink: 'https://www.cnnic.com.cn/',
       timeout: 5000,
