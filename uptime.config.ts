@@ -195,13 +195,13 @@ const workerConfig = {
     // Example TCP Monitor
     {
       id: 'test_tcp_monitor',
-      name: 'Test TCP Monitor (CNNIC)',
+      name: 'Test TCP Monitor (APNS)',
       // `method` should be `TCP_PING` for tcp monitors
       method: 'TCP_PING',
       // `target` should be `host:port` for tcp monitors
-      target: 'cnnic.cn:443',
+      target: 'api.push.apple.com:2197',
       tooltip: 'Test TCP Monitor',
-      statusPageLink: 'https://www.cnnic.com.cn/',
+      statusPageLink: 'https://support.apple.com/zh-cn/103229',
       timeout: 5000,
     },
   ],
