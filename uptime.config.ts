@@ -199,7 +199,7 @@ const workerConfig = {
       // `method` should be `TCP_PING` for tcp monitors
       method: 'TCP_PING',
       // `target` should be `host:port` for tcp monitors
-      target: 'cnnic.cn:80',
+      target: 'cnnic.cn:443',
       tooltip: 'Test TCP Monitor',
       statusPageLink: 'https://www.cnnic.com.cn/',
       timeout: 5000,
