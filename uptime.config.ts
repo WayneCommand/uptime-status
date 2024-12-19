@@ -192,18 +192,6 @@ const workerConfig = {
         'User-Agent': 'Uptimeflare',
       },
     },
-    // Example TCP Monitor
-    {
-      id: 'test_tcp_monitor',
-      name: 'Test TCP Monitor (APNS)',
-      // `method` should be `TCP_PING` for tcp monitors
-      method: 'TCP_PING',
-      // `target` should be `host:port` for tcp monitors
-      target: 'api.push.apple.com:2197',
-      tooltip: 'Test TCP Monitor',
-      statusPageLink: 'https://support.apple.com/zh-cn/103229',
-      timeout: 5000,
-    },
   ],
   notification: {
     // [Optional] apprise API server URL
