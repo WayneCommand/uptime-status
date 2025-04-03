@@ -70,6 +70,9 @@ export default {
       }
     }
 
+
+    let start = Date.now()
+
     // Read state, set init state if it doesn't exist
     let state =
       ((await env.UPTIMEFLARE_STATE.get('state', {
@@ -85,6 +88,10 @@ export default {
       } as MonitorState)
     state.overallDown = 0
     state.overallUp = 0
+
+    let end = Date.now()
+    
+    console.log(`State initialization took ${end - start}ms`)
 
     let statusChanged = false
     const currentTimeSecond = Math.round(Date.now() / 1000)
