@@ -1,6 +1,6 @@
 import { workerConfig } from '../../uptime.config'
 import { formatStatusChangeNotification, getWorkerLocation, notifyWithApprise } from './util'
-import { MonitorState } from '../../uptime.types'
+import { MonitorState, MonitorTarget } from '../../uptime.types'
 import { getStatus } from './monitor'
 
 export interface Env {
@@ -44,12 +44,20 @@ export default {
 
     // Auxiliary function to format notification and send it via apprise
     let formatAndNotify = async (
-      monitor: any,
+      monitor: MonitorTarget,
       isUp: boolean,
       timeIncidentStart: number,
       timeNow: number,
       reason: string
     ) => {
+      // Skip notification if monitor is in the skip list
+      // @ts-ignore
+      const skipList: string[] = workerConfig.notification?.skipNotificationIds
+      if (skipList && skipList.includes(monitor.id)) {
+        console.log(`Skipping notification for ${monitor.name} (${monitor.id} in skipNotificationIds)`)
+        return
+      }
+
       if (workerConfig.notification?.appriseApiServer && workerConfig.notification?.recipientUrl) {
         const notification = formatStatusChangeNotification(
           monitor,
@@ -70,9 +78,6 @@ export default {
       }
     }
 
-
-    let start = Date.now()
-
     // Read state, set init state if it doesn't exist
     let state =
       ((await env.UPTIMEFLARE_STATE.get('state', {
@@ -88,10 +93,6 @@ export default {
       } as MonitorState)
     state.overallDown = 0
     state.overallUp = 0
-
-    let end = Date.now()
-    
-    console.log(`State initialization took ${end - start}ms`)
 
     let statusChanged = false
     const currentTimeSecond = Math.round(Date.now() / 1000)
@@ -269,8 +270,8 @@ export default {
       // append to latency data
       let latencyLists = state.latency[monitor.id] || {
         recent: [],
-        all: [],
       }
+      latencyLists.all = []
 
       const record = {
         loc: checkLocation,
@@ -278,16 +279,10 @@ export default {
         time: currentTimeSecond,
       }
       latencyLists.recent.push(record)
-      if (latencyLists.all.length === 0 || currentTimeSecond - latencyLists.all.slice(-1)[0].time > 60 * 60) {
-        latencyLists.all.push(record)
-      }
 
       // discard old data
       while (latencyLists.recent[0]?.time < currentTimeSecond - 12 * 60 * 60) {
         latencyLists.recent.shift()
-      }
-      while (latencyLists.all[0]?.time < currentTimeSecond - 90 * 24 * 60 * 60) {
-        latencyLists.all.shift()
       }
       state.latency[monitor.id] = latencyLists
 

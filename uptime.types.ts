@@ -36,6 +36,7 @@ type MonitorTarget = {
   tooltip?: string
   statusPageLink?: string
   checkLocationWorkerRoute?: string
+  hideLatencyChart?: boolean
 
   // HTTP Code
   expectedCodes?: number[]
@@ -43,6 +44,7 @@ type MonitorTarget = {
   headers?: Record<string, string | undefined>
   body?: BodyInit
   responseKeyword?: string
+  responseForbiddenKeyword?: string
 }
 
 export type { MonitorState, MonitorTarget }
