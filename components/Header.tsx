@@ -23,7 +23,7 @@ export default function Header() {
         <div>
           <a href="https://github.com/lyc8503/UptimeFlare" target="_blank">
             <Text size="xl" span>
-              💨
+              🌥
             </Text>
             <Text
               size="xl"
