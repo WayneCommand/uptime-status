@@ -11,8 +11,9 @@ import {
   TimeScale,
 } from 'chart.js'
 import 'chartjs-adapter-moment'
-import { MonitorState, MonitorTarget } from '@/uptime.types'
-import { iataToCountry } from '@/util/iata'
+import { MonitorState, MonitorTarget } from '@/types/config'
+import { codeToCountry } from '@/util/iata'
+import { useTranslation } from 'react-i18next'
 
 ChartJS.register(
   CategoryScale,
@@ -32,7 +33,8 @@ export default function DetailChart({
   monitor: MonitorTarget
   state: MonitorState
 }) {
-  const latencyData = state.latency[monitor.id].recent.map((point) => ({
+  const { t } = useTranslation('common')
+  const latencyData = state.latency[monitor.id].map((point) => ({
     x: point.time * 1000,
     y: point.ping,
     loc: point.loc,
@@ -66,7 +68,7 @@ export default function DetailChart({
         callbacks: {
           label: (item: any) => {
             if (item.parsed.y) {
-              return `${item.parsed.y}ms (${iataToCountry(item.raw.loc)})`
+              return `${item.parsed.y}ms (${codeToCountry(item.raw.loc)})`
             }
           },
         },
@@ -76,7 +78,7 @@ export default function DetailChart({
       },
       title: {
         display: true,
-        text: 'Response times(ms)',
+        text: t('Response times'),
         align: 'start' as const,
       },
     },
