@@ -50,7 +50,9 @@ export class CompactedMonitorStateWrapper {
     }
 
     const hex2Uint8Arr = (hex: string): Uint8Array => {
+      // @ts-expect-error fromHex is not available in all TypeScript environments
       if (Uint8Array.fromHex) {
+        // @ts-expect-error
         return Uint8Array.fromHex(hex)
       } else {
         console.warn('Uint8Array.fromHex is not available, using parseInt as fallback.')
@@ -192,7 +194,9 @@ export class CompactedMonitorStateWrapper {
       latencies = this.data.latency[monitorId]
     }
 
+    // @ts-expect-error toHex is not available in all TypeScript environments
     latencies.time += new Uint8Array(new Uint32Array([record.time]).buffer).toHex()
+    // @ts-expect-error
     latencies.ping += new Uint8Array(new Uint16Array([record.ping]).buffer).toHex()
 
     if (latencies.loc.v[latencies.loc.v.length - 1] !== record.loc) {
@@ -207,7 +211,9 @@ export class CompactedMonitorStateWrapper {
     let latencies = this.data.latency[monitorId]
 
     return {
+      // @ts-expect-error fromHex is not available in all TypeScript environments
       time: new Uint32Array(Uint8Array.fromHex(latencies.time.slice(0, 8)).buffer)[0],
+      // @ts-expect-error
       ping: new Uint16Array(Uint8Array.fromHex(latencies.ping.slice(0, 4)).buffer)[0],
       loc: latencies.loc.v[0],
     }
@@ -217,7 +223,9 @@ export class CompactedMonitorStateWrapper {
     let latencies = this.data.latency[monitorId]
 
     return {
+      // @ts-expect-error
       time: new Uint32Array(Uint8Array.fromHex(latencies.time.slice(-8)).buffer)[0],
+      // @ts-expect-error
       ping: new Uint16Array(Uint8Array.fromHex(latencies.ping.slice(-4)).buffer)[0],
       loc: latencies.loc.v[latencies.loc.v.length - 1],
     }
