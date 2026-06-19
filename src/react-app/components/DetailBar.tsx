@@ -4,8 +4,8 @@ import { Box, Tooltip, Modal } from '@mantine/core'
 import { useResizeObserver } from '@mantine/hooks'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-const moment = require('moment')
-require('moment-precise-range-plugin')
+import moment from 'moment'
+import 'moment-precise-range-plugin'
 
 export default function DetailBar({
   monitor,
