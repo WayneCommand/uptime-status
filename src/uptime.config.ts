@@ -3,7 +3,6 @@ import { MaintenanceConfig, PageConfig, WorkerConfig } from '@/types/config'
 const pageConfig: PageConfig = {
   title: "Wayne's Status Page",
   links: [
-    { link: 'https://github.com/lyc8503', label: 'GitHub' },
     { link: 'mailto:wayne@waynecommand.com', label: 'Email Me', highlight: true },
   ],
   group: {},

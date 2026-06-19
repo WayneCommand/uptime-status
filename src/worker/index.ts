@@ -3,7 +3,7 @@ import { cors } from 'hono/cors'
 import { workerConfig, pageConfig, maintenances } from '@/uptime.config'
 import { doMonitor } from './monitor'
 import { formatAndNotify, getWorkerLocation } from './util'
-import { CompactedMonitorStateWrapper, getFromStore, setToStore } from './store'
+import { getState, setState, emptyState } from './store'
 import pLimit from 'p-limit'
 
 export interface Env {
@@ -16,13 +16,11 @@ const app = new Hono<{ Bindings: Env }>()
 app.use('/api/*', cors())
 
 app.get('/api/state', async (c) => {
-  const compactedState = new CompactedMonitorStateWrapper(
-    await getFromStore(c.env, 'state')
-  )
-  if (compactedState.data.lastUpdate === 0) {
+  const state = await getState(c.env)
+  if (!state || state.lastUpdate === 0) {
     return c.json({ error: 'No data available' }, 500)
   }
-  return c.json(compactedState.uncompact())
+  return c.json(state)
 })
 
 app.get('/api/config', async (c) => {
@@ -49,33 +47,29 @@ app.get('/api/maintenances', async (c) => {
 })
 
 app.get('/api/data', async (c) => {
-  const compactedState = new CompactedMonitorStateWrapper(
-    await getFromStore(c.env, 'state')
-  )
-  if (compactedState.data.lastUpdate === 0) {
+  const state = await getState(c.env)
+  if (!state || state.lastUpdate === 0) {
     return c.json({ error: 'No data available' }, 500)
   }
 
   const monitors: Record<string, any> = {}
   for (const monitor of workerConfig.monitors) {
-    const lastIncident = compactedState.getIncident(
-      monitor.id,
-      compactedState.incidentLen(monitor.id) - 1
-    )
+    const incidents = state.incident[monitor.id]
+    const lastIncident = incidents?.at(-1)
     const isUp = lastIncident?.end !== null
-    const latency = compactedState.getLastLatency(monitor.id)
+    const lastLatency = state.latency[monitor.id]?.at(-1)
     monitors[monitor.id] = {
       up: isUp,
-      latency: latency.ping,
-      location: latency.loc,
-      message: isUp ? 'OK' : lastIncident?.error[lastIncident.error.length - 1],
+      latency: lastLatency?.ping ?? 0,
+      location: lastLatency?.loc ?? '',
+      message: isUp ? 'OK' : lastIncident?.error?.at(-1) ?? 'Unknown',
     }
   }
 
   return c.json({
-    up: compactedState.data.overallUp,
-    down: compactedState.data.overallDown,
-    updatedAt: compactedState.data.lastUpdate,
+    up: state.overallUp,
+    down: state.overallDown,
+    updatedAt: state.lastUpdate,
     monitors,
     maintenances,
   })
@@ -94,13 +88,12 @@ app.get('/api/badge', async (c) => {
       return c.json({ schemaVersion: 1, label, message: 'no-monitor', color: 'lightgrey', isError: true }, 400)
     }
 
-    const compactedState = new CompactedMonitorStateWrapper(
-      await getFromStore(c.env, 'state')
-    )
-    const lastIncident = compactedState.getIncident(
-      monitorId,
-      compactedState.incidentLen(monitorId) - 1
-    )
+    const state = await getState(c.env)
+    if (!state) {
+      return c.json({ schemaVersion: 1, label, message: 'no-data', color: 'lightgrey', isError: true }, 400)
+    }
+    const incidents = state.incident[monitorId]
+    const lastIncident = incidents?.at(-1)
     const isUp = lastIncident?.end !== null
 
     return c.json({
@@ -119,9 +112,9 @@ async function scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext)
   const workerLocation = (await getWorkerLocation()) || 'ERROR'
   console.log(`Running scheduled event on ${workerLocation}...`)
 
-  const state = new CompactedMonitorStateWrapper(await getFromStore(env, 'state'))
-  state.data.overallDown = 0
-  state.data.overallUp = 0
+  const state = await getState(env) ?? emptyState()
+  state.overallDown = 0
+  state.overallUp = 0
 
   let statusChanged = false
   const currentTimeSecond = Math.round(Date.now() / 1000)
@@ -143,23 +136,22 @@ async function scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext)
     let monitorStatusChanged = false
     const { location: checkLocation, status } = checkResult[monitor.id]
 
-    status.up ? state.data.overallUp++ : state.data.overallDown++
+    status.up ? state.overallUp++ : state.overallDown++
 
-    if (state.incidentLen(monitor.id) === 0) {
-      state.appendIncident(monitor.id, {
+    if (!state.incident[monitor.id]?.length) {
+      state.incident[monitor.id] = [{
         start: [currentTimeSecond],
         end: currentTimeSecond,
         error: ['dummy'],
-      })
+      }]
     }
 
-    let lastIncident = state.getIncident(monitor.id, state.incidentLen(monitor.id) - 1)
+    const incidents = state.incident[monitor.id]
+    let lastIncident = incidents[incidents.length - 1]
 
     if (status.up) {
       if (lastIncident.end === null) {
         lastIncident.end = currentTimeSecond
-        state.setIncident(monitor.id, state.incidentLen(monitor.id) - 1, lastIncident)
-
         monitorStatusChanged = true
         try {
           if (
@@ -190,21 +182,19 @@ async function scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext)
       }
     } else {
       if (lastIncident.end !== null) {
-        state.appendIncident(monitor.id, {
+        incidents.push({
           start: [currentTimeSecond],
           end: null,
           error: [status.err],
         })
         monitorStatusChanged = true
-      } else if (lastIncident.end === null && lastIncident.error.slice(-1)[0] !== status.err) {
+      } else if (lastIncident.error.at(-1) !== status.err) {
         lastIncident.start.push(currentTimeSecond)
         lastIncident.error.push(status.err)
-
-        state.setIncident(monitor.id, state.incidentLen(monitor.id) - 1, lastIncident)
         monitorStatusChanged = true
       }
 
-      const currentIncident = state.getIncident(monitor.id, state.incidentLen(monitor.id) - 1)
+      const currentIncident = incidents[incidents.length - 1]
       try {
         if (
           (monitorStatusChanged &&
@@ -275,30 +265,32 @@ async function scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext)
       }
     }
 
-    state.appendLatency(monitor.id, {
+    state.latency[monitor.id] ??= []
+    state.latency[monitor.id].push({
       loc: checkLocation,
       ping: status.ping,
       time: currentTimeSecond,
     })
 
-    while (state.getFirstLatency(monitor.id).time < currentTimeSecond - 12 * 60 * 60) {
-      state.unshiftLatency(monitor.id)
+    const latencies = state.latency[monitor.id]
+    while (latencies.length && latencies[0].time < currentTimeSecond - 12 * 60 * 60) {
+      latencies.shift()
     }
 
     while (
-      state.incidentLen(monitor.id) > 0 &&
-      state.getIncident(monitor.id, 0).end &&
-      state.getIncident(monitor.id, 0).end! < currentTimeSecond - 90 * 24 * 60 * 60
+      incidents.length > 0 &&
+      incidents[0].end &&
+      incidents[0].end < currentTimeSecond - 90 * 24 * 60 * 60
     ) {
-      state.shiftIncident(monitor.id)
+      incidents.shift()
     }
 
     if (
-      state.incidentLen(monitor.id) === 0 ||
-      (state.getIncident(monitor.id, 0).start[0] > currentTimeSecond - 90 * 24 * 60 * 60 &&
-        state.getIncident(monitor.id, 0).error[0] != 'dummy')
+      incidents.length === 0 ||
+      (incidents[0].start[0] > currentTimeSecond - 90 * 24 * 60 * 60 &&
+        incidents[0].error[0] !== 'dummy')
     ) {
-      state.unshiftIncident(monitor.id, {
+      incidents.unshift({
         start: [currentTimeSecond - 90 * 24 * 60 * 60],
         end: currentTimeSecond - 90 * 24 * 60 * 60,
         error: ['dummy'],
@@ -309,16 +301,16 @@ async function scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext)
   }
 
   console.log(
-    `statusChanged: ${statusChanged}, lastUpdate: ${state.data.lastUpdate}, currentTime: ${currentTimeSecond}`
+    `statusChanged: ${statusChanged}, lastUpdate: ${state.lastUpdate}, currentTime: ${currentTimeSecond}`
   )
   if (
     statusChanged ||
-    currentTimeSecond - state.data.lastUpdate >=
+    currentTimeSecond - state.lastUpdate >=
       (workerConfig.kvWriteCooldownMinutes ?? 3) * 60 - 10
   ) {
     console.log('Updating state...')
-    state.data.lastUpdate = currentTimeSecond
-    await setToStore(env, 'state', state.getCompactedStateStr())
+    state.lastUpdate = currentTimeSecond
+    await setState(env, state)
   } else {
     console.log('Skipping state update due to cooldown period.')
   }

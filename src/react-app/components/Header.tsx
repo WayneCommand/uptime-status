@@ -1,4 +1,4 @@
-import { Container, Group, Image } from '@mantine/core'
+import { Container, Group } from '@mantine/core'
 import { useAppData } from '../AppContext'
 import { useTranslation } from 'react-i18next'
 
@@ -31,8 +31,6 @@ export default function Header({ style }: { style?: React.CSSProperties }) {
 
   const links = [{ label: t('Incidents'), link: '/incidents' }, ...(pageConfig?.links || [])]
 
-  const logoSrc = pageConfig?.logo ?? '/logo.svg'
-
   return (
     <header
       style={{
@@ -43,19 +41,32 @@ export default function Header({ style }: { style?: React.CSSProperties }) {
         ...style,
       }}
     >
+      <style>{`
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .logo-text {
+          font-size: 24px;
+          font-weight: 700;
+          background: linear-gradient(90deg, #6366f1, #ec4899, #f59e0b, #6366f1);
+          background-size: 300% 100%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: gradient-shift 6s ease infinite;
+          letter-spacing: -0.5px;
+        }
+      `}</style>
       <Container size="md" style={{ height: '56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <a
-            href={window.location.pathname === '/' ? 'https://github.com/lyc8503/UptimeFlare' : '/'}
+            href={window.location.pathname === '/' ? 'https://github.com/WayneCommand/uptime-status' : '/'}
             target={window.location.pathname === '/' ? '_blank' : undefined}
+            style={{ textDecoration: 'none' }}
           >
-            <Image
-              src={logoSrc}
-              h={56}
-              w={{ base: 140, sm: 190 } as any}
-              fit="contain"
-              alt="logo"
-            />
+            <span className="logo-text">{pageConfig?.title || 'UptimeFlare'}</span>
           </a>
         </div>
 

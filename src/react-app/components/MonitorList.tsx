@@ -91,11 +91,7 @@ export default function MonitorList({
                 .filter((monitor) => group[groupName].includes(monitor.id))
                 .sort((a, b) => group[groupName].indexOf(a.id) - group[groupName].indexOf(b.id))
                 .map((monitor) => (
-                  <div key={monitor.id}>
-                    <Card.Section ml="xs" mr="xs">
-                      <MonitorDetail monitor={monitor} state={state} />
-                    </Card.Section>
-                  </div>
+                  <MonitorDetail key={monitor.id} monitor={monitor} state={state} />
                 ))}
             </Accordion.Panel>
           </Accordion.Item>
@@ -104,11 +100,9 @@ export default function MonitorList({
     )
   } else {
     content = monitors.map((monitor) => (
-      <div key={monitor.id}>
-        <Card.Section ml="xs" mr="xs">
-          <MonitorDetail monitor={monitor} state={state} />
-        </Card.Section>
-      </div>
+      <Card.Section key={monitor.id} inheritPadding>
+        <MonitorDetail monitor={monitor} state={state} />
+      </Card.Section>
     ))
   }
 
