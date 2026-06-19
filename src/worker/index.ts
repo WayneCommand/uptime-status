@@ -1,16 +1,14 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { DurableObject } from 'cloudflare:workers'
-import { MonitorTarget } from '@/types/config'
 import { workerConfig, pageConfig, maintenances } from '@/uptime.config'
-import { doMonitor, getStatus } from './monitor'
+import { doMonitor } from './monitor'
 import { formatAndNotify, getWorkerLocation } from './util'
 import { CompactedMonitorStateWrapper, getFromStore, setToStore } from './store'
 import pLimit from 'p-limit'
 
 export interface Env {
-  UPTIMEFLARE_D1: D1Database
-  REMOTE_CHECKER_DO: DurableObjectNamespace<RemoteChecker>
+  UPSTASH_REDIS_URL: string
+  UPSTASH_REDIS_TOKEN: string
 }
 
 const app = new Hono<{ Bindings: Env }>()
@@ -329,25 +327,4 @@ async function scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext)
 export default {
   fetch: app.fetch,
   scheduled,
-}
-
-export class RemoteChecker extends DurableObject {
-  constructor(ctx: DurableObjectState, env: Env) {
-    super(ctx, env)
-  }
-
-  async getLocationAndStatus(
-    monitor: MonitorTarget
-  ): Promise<{ location: string; status: { ping: number; up: boolean; err: string } }> {
-    const colo = (await getWorkerLocation()) as string
-    console.log(`Running remote checker (DurableObject) at ${colo}...`)
-    const status = await getStatus(monitor)
-    return { location: colo, status }
-  }
-
-  async kill() {
-    this.ctx.blockConcurrencyWhile(async () => {
-      throw 'killed'
-    })
-  }
 }

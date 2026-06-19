@@ -329,18 +329,7 @@ export async function doMonitor(monitor: MonitorTarget, defaultLocation: string,
     try {
       console.log(`[${monitor.id}] Calling check proxy: ${monitor.checkProxy}`)
       let resp: any
-      if (monitor.checkProxy.startsWith('worker://')) {
-        const doLoc = monitor.checkProxy.replace('worker://', '')
-        const doId = env.REMOTE_CHECKER_DO.idFromName(monitor.id)
-        const doStub = env.REMOTE_CHECKER_DO.get(doId, {
-          locationHint: doLoc as DurableObjectLocationHint,
-        })
-        resp = await doStub.getLocationAndStatus(monitor)
-        try {
-          await doStub.kill()
-        } catch (err) {
-        }
-      } else if (monitor.checkProxy.startsWith('globalping://')) {
+      if (monitor.checkProxy.startsWith('globalping://')) {
         resp = await getStatusWithGlobalPing(monitor)
       } else {
         resp = await (
