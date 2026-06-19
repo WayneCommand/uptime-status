@@ -39,3 +39,4 @@ terraform.tfstate*
 
 /.wrangler
 /.idea
+/dist
